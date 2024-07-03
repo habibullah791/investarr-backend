@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "http://localhost:3000",
     "*",
+    "web-production-15a27.up.railway.app"
 ]
 CORS_ALLOWED_ORIGINS = [
     # "http://localhost:3000",
