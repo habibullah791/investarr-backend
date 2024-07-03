@@ -85,7 +85,7 @@ class Video(models.Model):
 
 class ArticleImage(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='images/', blank=True)  # Use a subdirectory within the media folder
+    image = models.ImageField(upload_to='images/', blank=True)  # Correct the path here
     caption = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
