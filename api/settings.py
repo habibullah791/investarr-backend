@@ -186,3 +186,6 @@ STATICFILES_DIRS = [
 
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage" # new
+
+
+CSRF_TRUSTED_ORIGINS = ['web-production-15a27.up.railway.app']
