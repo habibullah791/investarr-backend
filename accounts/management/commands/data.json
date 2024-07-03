@@ -1,0 +1,121 @@
+{
+    "investors": [
+        {
+            "first_name": "John",
+            "last_name": "Doe",
+            "username": "john_doe",
+            "profile_pic_url": "https://example.com/john_doe.jpg",
+            "address": "123 Main St, City, Country",
+            "area_of_interest": "E-commerce Platforms",
+            "bio": "Experienced investor interested in fintech startups. Experienced investor interested in fintech startups. Experienced investor interested in fintech startups.",
+            "membership_tier": "Premium",
+            "verification_status": "Level 2",
+            "verification_badge": "Verified"
+        },
+        {
+            "first_name": "Alice",
+            "last_name": "Smith",
+            "username": "alice_smith",
+            "profile_pic_url": "https://example.com/alice_smith.jpg",
+            "address": "456 Elm St, City, Country",
+            "area_of_interest": "HealthTech",
+            "bio": "Passionate about investing in healthtech innovations. Passionate about investing in healthtech innovations. Passionate about investing in healthtech innovations.",
+            "membership_tier": "Basic",
+            "verification_status": "Level 1",
+            "verification_badge": "Verified"
+        },
+        {
+            "first_name": "Michael",
+            "last_name": "Johnson",
+            "username": "michael_johnson",
+            "profile_pic_url": "https://example.com/michael_johnson.jpg",
+            "address": "789 Oak St, City, Country",
+            "area_of_interest": "AI/ML",
+            "bio": "Tech enthusiast with a focus on AI and machine learning startups. Tech enthusiast with a focus on AI and machine learning startups. Tech enthusiast with a focus on AI and machine learning startups.",
+            "membership_tier": "Premium",
+            "verification_status": "Level 2",
+            "verification_badge": "Verified"
+        },
+        {
+            "first_name": "Emma",
+            "last_name": "Brown",
+            "username": "emma_brown",
+            "profile_pic_url": "https://example.com/emma_brown.jpg",
+            "address": "101 Pine St, City, Country",
+            "area_of_interest": "Blockchain",
+            "bio": "Blockchain enthusiast and investor. Blockchain enthusiast and investor. Blockchain enthusiast and investor.",
+            "membership_tier": "Premium",
+            "verification_status": "Level 2",
+            "verification_badge": "Verified"
+        },
+        {
+            "first_name": "David",
+            "last_name": "Lee",
+            "username": "david_lee",
+            "profile_pic_url": "https://example.com/david_lee.jpg",
+            "address": "222 Maple St, City, Country",
+            "area_of_interest": "Renewable Energy",
+            "bio": "Passionate about investing in renewable energy startups. Passionate about investing in renewable energy startups. Passionate about investing in renewable energy startups.",
+            "membership_tier": "Premium",
+            "verification_status": "Level 2",
+            "verification_badge": "Verified"
+        }
+    ],
+    "investees": [
+        {
+            "first_name": "Emily",
+            "last_name": "Wang",
+            "username": "emily_wang",
+            "profile_pic_url": "https://example.com/emily_wang.jpg",
+            "address": "321 Elm St, City, Country",
+            "area_of_interest": "E-commerce Platforms",
+            "bio": "Entrepreneur with a vision for revolutionizing e-commerce. Entrepreneur with a vision for revolutionizing e-commerce. Entrepreneur with a vision for revolutionizing e-commerce.",
+            "startup_name": "TechStore",
+            "startup_description": "An online platform for tech enthusiasts. An online platform for tech enthusiasts. An online platform for tech enthusiasts."
+        },
+        {
+            "first_name": "Daniel",
+            "last_name": "Garcia",
+            "username": "daniel_garcia",
+            "profile_pic_url": "https://example.com/daniel_garcia.jpg",
+            "address": "555 Oak St, City, Country",
+            "area_of_interest": "EdTech",
+            "bio": "Passionate about education technology and innovation. Passionate about education technology and innovation. Passionate about education technology and innovation.",
+            "startup_name": "EduHub",
+            "startup_description": "An online learning platform for K-12 students. An online learning platform for K-12 students. An online learning platform for K-12 students."
+        },
+        {
+            "first_name": "Sophia",
+            "last_name": "Chen",
+            "username": "sophia_chen",
+            "profile_pic_url": "https://example.com/sophia_chen.jpg",
+            "address": "777 Maple St, City, Country",
+            "area_of_interest": "HealthTech",
+            "bio": "Healthcare professional turned entrepreneur. Healthcare professional turned entrepreneur. Healthcare professional turned entrepreneur.",
+            "startup_name": "MedTech Solutions",
+            "startup_description": "Developing innovative solutions for the healthcare industry. Developing innovative solutions for the healthcare industry Developing innovative solutions for the healthcare industry."
+        },
+        {
+            "first_name": "Kevin",
+            "last_name": "Nguyen",
+            "username": "kevin_nguyen",
+            "profile_pic_url": "https://example.com/kevin_nguyen.jpg",
+            "address": "999 Pine St, City, Country",
+            "area_of_interest": "AI/ML",
+            "bio": "AI enthusiast with a passion for building intelligent systems. AI enthusiast with a passion for building intelligent systems. AI enthusiast with a passion for building intelligent systems.",
+            "startup_name": "AI Innovations",
+            "startup_description": "Creating cutting-edge AI solutions for various industries. Creating cutting-edge AI solutions for various industries. Creating cutting-edge AI solutions for various industries."
+        },
+        {
+            "first_name": "Lily",
+            "last_name": "Zhang",
+            "username": "lily_zhang",
+            "profile_pic_url": "https://example.com/lily_zhang.jpg",
+            "address": "123 Oak St, City, Country",
+            "area_of_interest": "Blockchain",
+            "bio": "Blockchain developer with a passion for decentralized applications. Blockchain developer with a passion for decentralized applications. Blockchain developer with a passion for decentralized applications.",
+            "startup_name": "BlockTech",
+            "startup_description": "Building secure and scalable blockchain solutions. Building secure and scalable blockchain solutions. Building secure and scalable blockchain solutions."
+        }
+    ]
+}
