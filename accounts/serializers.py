@@ -49,12 +49,12 @@ class LogoutSerializer(serializers.Serializer):
 class InvestorInfoUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('profile_pic_url', 'first_name', 'last_name', 'address', 'area_of_interest', 'bio', 'phone_number')
+        fields = ('profile_pic_url', 'gallery_images', 'first_name', 'last_name', 'address', 'area_of_interest', 'bio', 'phone_number')
 
 class InvesteeInfoUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('profile_pic_url', 'first_name', 'last_name', 'address', 'area_of_interest', 'bio', 'phone_number', 'startup_name', 'startup_idea', 'startup_description')
+        fields = ('profile_pic_url', 'gallery_images', 'first_name', 'last_name', 'address', 'area_of_interest', 'bio', 'phone_number', 'startup_name', 'startup_idea', 'startup_description')
 
 
 class UserEmailPasswordSerializer(serializers.ModelSerializer):

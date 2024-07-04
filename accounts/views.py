@@ -120,6 +120,7 @@ class InvestorInfoUpdateView(UpdateAPIView):
         }, status=status.HTTP_200_OK)
 
 
+
 class InvesteeInfoUpdateView(UpdateAPIView):
     serializer_class = InvesteeInfoUpdateSerializer
     permission_classes = [IsAuthenticated]

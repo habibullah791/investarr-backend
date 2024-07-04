@@ -7,9 +7,9 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = [
         'id', 'username', 'first_name', 'last_name', 'email', 'user_type', 
-        'profile_pic_url', 'address', 'area_of_interest', 'bio', 
+        'profile_pic_url', 'gallery_images', 'address', 'area_of_interest',
         'membership_tier', 'verification_status', 'verification_badge', 
-        'startup_idea', 'startup_name', 'startup_description', 'is_staff', 'is_active',
+        'startup_name', 'is_staff', 'is_active',
         'last_login', 'date_joined'
     ]
     fieldsets = (
@@ -18,7 +18,7 @@ class CustomUserAdmin(UserAdmin):
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
         ('Custom info', {'fields': (
-            'user_type', 'profile_pic_url', 'address', 'area_of_interest', 'bio', 
+            'user_type', 'profile_pic_url','gallery_images', 'address', 'area_of_interest', 'bio', 
             'membership_tier', 'verification_status', 'verification_badge', 
             'startup_idea', 'startup_name', 'startup_description'
         )}),
