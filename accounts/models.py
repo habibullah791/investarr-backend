@@ -11,8 +11,11 @@ class CustomUser(AbstractUser):
     ]
 
     MEMBERSHIP_TIER_CHOICES = [
+        ('Free', 'Free'),
         ('Basic', 'Basic'),
+        ('Standard', 'Standard'),
         ('Premium', 'Premium'),
+        ('Premium Plus', 'Premium Plus'),
     ]
 
     VERIFICATION_STATUS_CHOICES = [
@@ -27,8 +30,11 @@ class CustomUser(AbstractUser):
         ('Level 2', 'Level 2'),
     ]
 
+    PAYMENT_STATUS = [
+        ('Pending', 'Pending'),
+        ('Success', 'Success'),
+    ]
 
-    
     id = models.AutoField(primary_key=True)
     user_type = models.CharField(max_length=255, choices=USER_TYPE_CHOICES, blank=True, null=True)
     profile_pic_url = models.TextField(blank=True, null=True)
@@ -37,7 +43,7 @@ class CustomUser(AbstractUser):
     address = models.CharField(max_length=255, blank=True, null=True)
     area_of_interest = models.TextField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
-    membership_tier = models.CharField(max_length=255, choices=MEMBERSHIP_TIER_CHOICES, blank=True, null=True)
+    membership_tier = models.CharField(max_length=255, choices=MEMBERSHIP_TIER_CHOICES, default='Free', blank=True, null=True)
     verification_status = models.CharField(max_length=255, choices=VERIFICATION_STATUS_CHOICES, blank=True, null=True)
     verification_badge = models.CharField(max_length=255, choices=VERIFICATION_BADGE_CHOICES, blank=True, null=True)
     startup_idea = models.TextField(blank=True, null=True)
@@ -45,9 +51,10 @@ class CustomUser(AbstractUser):
     startup_description = models.TextField(blank=True, null=True)
     is_email_verified = models.BooleanField(default=False)
     is_phone_verified = models.BooleanField(default=False)
+    order_tracking_id = models.CharField(max_length=255, blank=True, null=True)
+    merchant_reference = models.CharField(max_length=255, blank=True, null=True)
+    payment_status = models.CharField(max_length=255, choices=PAYMENT_STATUS, blank=True, null=True)
     
-    
-
     def __str__(self):
         return self.username
 

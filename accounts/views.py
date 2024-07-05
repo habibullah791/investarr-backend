@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView
 
 from .models import CustomUser, Article, Video
-from .serializers import CustomUserSerializer, InvesteeInfoUpdateSerializer, InvestorInfoUpdateSerializer, LogoutSerializer, UserEmailPasswordSerializer, UserLoginSerializer, InvestorSerializer, InvesteeSerializer, ArticleSerializer, VideoSerializer
+from .serializers import CustomUserSerializer, InvesteeInfoUpdateSerializer, InvestorInfoUpdateSerializer, LogoutSerializer, UserEmailPasswordSerializer, UserLoginSerializer, InvestorSerializer, InvesteeSerializer, ArticleSerializer, VideoSerializer, UserVerificationStatusSerializer
 
 class UserCreateView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
@@ -216,5 +216,24 @@ class VideoListView(ListAPIView):
             'statusCode': status.HTTP_200_OK,
             'data': serializer.data,
             'message': 'Videos retrieved successfully.'
+        }
+        return Response(data)
+    
+
+
+class CurrentUserVerificationStatusView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserVerificationStatusSerializer
+
+    def get_object(self):
+        return self.request.user
+
+    def get(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(user)
+        data = {
+            'statusCode': status.HTTP_200_OK,
+            'data': serializer.data,
+            'message': 'User verification status retrieved successfully.'
         }
         return Response(data)

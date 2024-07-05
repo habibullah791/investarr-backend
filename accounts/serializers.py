@@ -103,3 +103,9 @@ class ArticleSerializer(serializers.ModelSerializer):
                     'description': description
                 })
         return subtopics
+    
+
+class UserVerificationStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('id', 'verification_badge', 'verification_status', 'membership_tier')

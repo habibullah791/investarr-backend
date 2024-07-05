@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ArticleListView, ArticleDetailView, VideoListView, InvesteeInfoUpdateView, InvestorInfoUpdateView, UserEmailPasswordUpdateView, UserLoginView, UserCreateView, UserDetailView, LogoutView, InvestorDataView, InvesteeDataView
+from .views import ArticleListView, ArticleDetailView, VideoListView, InvesteeInfoUpdateView, InvestorInfoUpdateView, UserEmailPasswordUpdateView, UserLoginView, UserCreateView, UserDetailView, LogoutView, InvestorDataView, InvesteeDataView, CurrentUserVerificationStatusView
 
 urlpatterns = [
     path('articles/', ArticleListView.as_view(), name='article-list'),
@@ -14,4 +14,5 @@ urlpatterns = [
     path('investor-info/update/<int:pk>/', InvestorInfoUpdateView.as_view(), name='investor_update'),
     path('investee-info/update/<int:pk>/', InvesteeInfoUpdateView.as_view(), name='investor_update'),
     path('email-pass/update/<int:pk>/', UserEmailPasswordUpdateView.as_view(), name='investor_update'),
+    path('user/verification-status/', CurrentUserVerificationStatusView.as_view(), name='current-user-verification-status'),
 ]
