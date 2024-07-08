@@ -53,7 +53,7 @@ class CustomUser(AbstractUser):
     is_phone_verified = models.BooleanField(default=False)
     order_tracking_id = models.CharField(max_length=255, blank=True, null=True)
     merchant_reference = models.CharField(max_length=255, blank=True, null=True)
-    payment_status = models.CharField(max_length=255, choices=PAYMENT_STATUS, blank=True, null=True)
+    payment_status = models.CharField(max_length=255, choices=PAYMENT_STATUS, default='Pending', blank=True, null=True)
     
     def __str__(self):
         return self.username
