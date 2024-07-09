@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Article, Video, ArticleImage
+from .models import CustomUser, Article, Video, ArticleImage, EmailReceived
 
 
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = [
-        'id', 'username', 'first_name', 'last_name', 'email', 'user_type', 
+        'id', 'username', 'first_name', 'last_name', 'email', 'user_type', 'payment_status' ,
         'address','membership_tier', 'verification_status', 'verification_badge', 
         'startup_name', 'is_staff', 'is_active',
         'last_login', 'date_joined'
@@ -18,8 +18,8 @@ class CustomUserAdmin(UserAdmin):
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
         ('Custom info', {'fields': (
             'user_type', 'profile_pic_url','gallery_images', 'address', 'area_of_interest', 'bio', 
-            'membership_tier', 'verification_status', 'verification_badge', 
-            'startup_idea', 'startup_name', 'startup_description'
+            'membership_tier', 'payment_status','verification_status', 'verification_badge', 
+             'startup_name', 'startup_idea', 'startup_description'
         )}),
     )
     add_fieldsets = (
@@ -52,6 +52,13 @@ class VideoAdmin(admin.ModelAdmin):
     list_filter = ('is_published', 'created_at', 'author', 'article')
     search_fields = ('title', 'author__username', 'video_url')
 
+
+class EmailReceivedAdmin(admin.ModelAdmin):
+    list_display = ('user','subject', 'received_at', 'is_read', 'is_deleted')
+    list_filter = ('is_read', 'is_deleted', 'received_at')
+    search_fields = ( 'subject', 'content')
+
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(Video, VideoAdmin)
+admin.site.register(EmailReceived, EmailReceivedAdmin)

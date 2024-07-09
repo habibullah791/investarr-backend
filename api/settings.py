@@ -196,3 +196,16 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage" 
 
 
 CSRF_TRUSTED_ORIGINS = ['https://web-production-15a27.up.railway.app']
+
+
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = 'investarr@starrich.co.tz'
+# EMAIL_HOST = 'smtp.example.com'
+EMAIL_HOST = "smtp.mailbux.email"  # Update the EMAIL_HOST to smtp.mailbux.email
+EMAIL_PORT = 465  # Change the EMAIL_PORT to 465 for Mailbox
+EMAIL_USE_SSL = True  # Add this line to enable SSL for Mailbox
+EMAIL_USE_TLS = False
+EMAIL_HOST_USER = 'investarr@starrich.co.tz'
+EMAIL_HOST_PASSWORD = 'Investarr2211'

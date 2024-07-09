@@ -1,5 +1,22 @@
 from django.urls import path
-from .views import ArticleListView, ArticleDetailView, VideoListView, InvesteeInfoUpdateView, InvestorInfoUpdateView, UserEmailPasswordUpdateView, UserLoginView, UserCreateView, UserDetailView, LogoutView, InvestorDataView, InvesteeDataView, CurrentUserVerificationStatusView
+from .views import (
+    ArticleListView,
+    ArticleDetailView,
+    VideoListView,
+    InvesteeInfoUpdateView,
+    InvestorInfoUpdateView,
+    UserEmailPasswordUpdateView,
+    UserLoginView,
+    UserCreateView,
+    UserDetailView,
+    LogoutView,
+    InvestorDataView,
+    InvesteeDataView,
+    CurrentUserVerificationStatusView,
+    EmailReceivedCreateView,
+    CertifiedUserDataView
+)
+
 
 urlpatterns = [
     path('articles/', ArticleListView.as_view(), name='article-list'),
@@ -11,8 +28,11 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='user-logout'),
     path('investors_data/', InvestorDataView.as_view(), name='investor-data'),
     path('investee_data/', InvesteeDataView.as_view(), name='investee-data'),
+    path('certified-users/', CertifiedUserDataView.as_view(), name='certified_users_list'),
     path('investor-info/update/<int:pk>/', InvestorInfoUpdateView.as_view(), name='investor_update'),
     path('investee-info/update/<int:pk>/', InvesteeInfoUpdateView.as_view(), name='investor_update'),
     path('email-pass/update/<int:pk>/', UserEmailPasswordUpdateView.as_view(), name='investor_update'),
     path('user/verification-status/', CurrentUserVerificationStatusView.as_view(), name='current-user-verification-status'),
+    path('email/submit/', EmailReceivedCreateView.as_view(), name='email-submit'),
+
 ]

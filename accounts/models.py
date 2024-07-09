@@ -38,14 +38,14 @@ class CustomUser(AbstractUser):
     id = models.AutoField(primary_key=True)
     user_type = models.CharField(max_length=255, choices=USER_TYPE_CHOICES, blank=True, null=True)
     profile_pic_url = models.TextField(blank=True, null=True)
-    gallery_images = models.JSONField(default=list)
+    gallery_images = models.JSONField(default=list, blank=True, null=True)
     phone_number = models.CharField(max_length=255, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     area_of_interest = models.TextField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     membership_tier = models.CharField(max_length=255, choices=MEMBERSHIP_TIER_CHOICES, default='Free', blank=True, null=True)
-    verification_status = models.CharField(max_length=255, choices=VERIFICATION_STATUS_CHOICES, blank=True, null=True)
-    verification_badge = models.CharField(max_length=255, choices=VERIFICATION_BADGE_CHOICES, blank=True, null=True)
+    verification_status = models.CharField(max_length=255, choices=VERIFICATION_STATUS_CHOICES, default='Basic', blank=True, null=True)
+    verification_badge = models.CharField(max_length=255, choices=VERIFICATION_BADGE_CHOICES, default='Basic', blank=True, null=True)
     startup_idea = models.TextField(blank=True, null=True)
     startup_name = models.CharField(max_length=255, blank=True, null=True)
     startup_description = models.TextField(blank=True, null=True)
@@ -57,6 +57,18 @@ class CustomUser(AbstractUser):
     
     def __str__(self):
         return self.username
+
+
+class EmailReceived(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
+    subject = models.CharField(max_length=255)
+    content = models.TextField()
+    received_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.subject
 
 
 class Article(models.Model):

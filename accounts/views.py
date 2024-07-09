@@ -5,10 +5,33 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth.hashers import make_password
 from rest_framework.views import APIView
-from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView
+from django.core.mail import send_mail
+from django.conf import settings
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
+from django.db.models import Q
 
 from .models import CustomUser, Article, Video
-from .serializers import CustomUserSerializer, InvesteeInfoUpdateSerializer, InvestorInfoUpdateSerializer, LogoutSerializer, UserEmailPasswordSerializer, UserLoginSerializer, InvestorSerializer, InvesteeSerializer, ArticleSerializer, VideoSerializer, UserVerificationStatusSerializer
+from rest_framework.generics import (
+    UpdateAPIView,
+    ListAPIView,
+)
+from .serializers import (
+    CustomUserSerializer,
+    InvesteeInfoUpdateSerializer,
+    InvestorInfoUpdateSerializer,
+    LogoutSerializer,
+    UserEmailPasswordSerializer,
+    UserLoginSerializer,
+    InvestorSerializer,
+    InvesteeSerializer,
+    ArticleSerializer,
+    VideoSerializer,
+    UserVerificationStatusSerializer,
+    EmailReceivedSerializer
+)
+
 
 class UserCreateView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
@@ -22,8 +45,7 @@ class UserCreateView(generics.CreateAPIView):
         if password:
             validated_data['password'] = make_password(password)
         serializer.save()
-
-        
+       
 class UserDetailView(generics.RetrieveAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
@@ -34,8 +56,6 @@ class UserDetailView(generics.RetrieveAPIView):
         user = self.get_object()
         serializer = self.get_serializer(user)
         return Response(serializer.data)
-
-
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -54,7 +74,6 @@ class LogoutView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
    
-
 class UserLoginView(TokenObtainPairView):
     serializer_class = UserLoginSerializer
     permission_classes = [AllowAny]
@@ -72,7 +91,6 @@ class UserLoginView(TokenObtainPairView):
             "user": user_data
         })
 
-
 class InvestorDataView(generics.ListAPIView):
     serializer_class = InvestorSerializer
     permission_classes = [AllowAny]
@@ -81,7 +99,6 @@ class InvestorDataView(generics.ListAPIView):
     def get_queryset(self):
         return CustomUser.objects.filter(user_type=CustomUser.INVESTOR)
 
-
 class InvesteeDataView(generics.ListAPIView):
     serializer_class = InvesteeSerializer
     permission_classes = [AllowAny]
@@ -89,7 +106,13 @@ class InvesteeDataView(generics.ListAPIView):
     def get_queryset(self):
         return CustomUser.objects.filter(user_type=CustomUser.INVESTEE)
 
+class CertifiedUserDataView(generics.ListAPIView):
+    serializer_class = CustomUserSerializer
+    permission_classes = [AllowAny]
 
+    def get_queryset(self):
+        return CustomUser.objects.filter(Q(verification_status='Level 2'))
+    
 class InvestorInfoUpdateView(UpdateAPIView):
     serializer_class = InvestorInfoUpdateSerializer
     permission_classes = [IsAuthenticated]
@@ -119,8 +142,6 @@ class InvestorInfoUpdateView(UpdateAPIView):
             'user': serialized_user
         }, status=status.HTTP_200_OK)
 
-
-
 class InvesteeInfoUpdateView(UpdateAPIView):
     serializer_class = InvesteeInfoUpdateSerializer
     permission_classes = [IsAuthenticated]
@@ -149,7 +170,6 @@ class InvesteeInfoUpdateView(UpdateAPIView):
             'message': 'Investee profile updated successfully.',
             'user': serialized_user
         }, status=status.HTTP_200_OK)
-
 
 class UserEmailPasswordUpdateView(UpdateAPIView):
     serializer_class = UserEmailPasswordSerializer
@@ -192,7 +212,6 @@ class ArticleListView(ListAPIView):
         }
         return Response(data)
 
-
 class ArticleDetailView(generics.RetrieveAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
@@ -204,7 +223,6 @@ class ArticleDetailView(generics.RetrieveAPIView):
         serializer = self.get_serializer(article)
         return Response(serializer.data)
     
-
 class VideoListView(ListAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
@@ -218,8 +236,6 @@ class VideoListView(ListAPIView):
             'message': 'Videos retrieved successfully.'
         }
         return Response(data)
-    
-
 
 class CurrentUserVerificationStatusView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
@@ -237,3 +253,58 @@ class CurrentUserVerificationStatusView(generics.RetrieveAPIView):
             'message': 'User verification status retrieved successfully.'
         }
         return Response(data)
+
+class EmailReceivedCreateView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EmailReceivedSerializer
+
+    def perform_create(self, serializer):
+        # Save the email received data
+        email_received = serializer.save()
+        print("Email received", email_received)
+        
+        # Send the email using custom function
+        sender = settings.DEFAULT_FROM_EMAIL
+        recipients = ['shahid.habib791@gmail.com']
+        subject = email_received.subject
+        body = email_received.content
+
+        try:
+            send_email(subject, body, sender, recipients, settings.EMAIL_HOST_PASSWORD)
+            print("-Email sent successfully!")
+        except Exception as e:
+            print(f"Error sending email: {e}")
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        return Response({
+            'statusCode': status.HTTP_201_CREATED,
+            'data': response.data,
+            'message': 'Email sent and data saved successfully.'
+        })
+
+def send_email(subject, body, sender, recipients, password):
+    print("Subject: ", subject)
+    print("Body: ", body)
+    print("Sender: ", sender)
+    print("Recipients: ", recipients)
+    print("Password: ", password)
+    try:
+        # Create a MIMEText object for HTML
+        msg = MIMEMultipart("alternative")
+
+        html_body = MIMEText(body, "html")
+        msg.attach(html_body)
+
+        msg["Subject"] = subject
+        msg["From"] = sender
+        msg["To"] = ", ".join(recipients)
+
+        with smtplib.SMTP_SSL(settings.EMAIL_HOST, settings.EMAIL_PORT) as smtp_server:
+            smtp_server.login(sender, password)
+            smtp_server.sendmail(sender, recipients, msg.as_string())
+
+        print("Email sent successfully!")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")

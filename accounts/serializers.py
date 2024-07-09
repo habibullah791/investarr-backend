@@ -1,10 +1,10 @@
 from rest_framework.response import Response
 from rest_framework import serializers
-from .models import CustomUser, Article, Video, ArticleImage
 from django.contrib.auth import authenticate
 
-
 import logging
+from .models import CustomUser, Article, Video, ArticleImage,EmailReceived
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,11 +24,10 @@ class UserLoginSerializer(serializers.Serializer):
         logger.error("Authentication failed: Invalid credentials")
         raise serializers.ValidationError("Invalid credentials")
     
-
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = '__all__'
+        exclude = ['password']
 
 
 class InvestorSerializer(serializers.ModelSerializer):
@@ -40,7 +39,7 @@ class InvestorSerializer(serializers.ModelSerializer):
 class InvesteeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('id', 'first_name', 'last_name', 'user_type', 'username', 'profile_pic_url', 'phone_number', 'address', 'area_of_interest', 'bio', 'startup_name', 'startup_idea', 'startup_description')
+        fields = ('id', 'first_name', 'last_name', 'user_type', 'username', 'phone_number', 'profile_pic_url',  'address', 'area_of_interest', 'bio', 'membership_tier',  'verification_status', 'verification_badge', 'startup_name', 'startup_idea', 'startup_description')
 
 class LogoutSerializer(serializers.Serializer):
     refresh_token = serializers.CharField()
@@ -109,3 +108,10 @@ class UserVerificationStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('id', 'verification_badge', 'verification_status', 'membership_tier')
+
+
+
+class EmailReceivedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailReceived
+        fields = ['user', 'subject', 'content']
