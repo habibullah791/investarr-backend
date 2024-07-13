@@ -110,8 +110,22 @@ class UserVerificationStatusSerializer(serializers.ModelSerializer):
         fields = ('id', 'verification_badge', 'verification_status', 'membership_tier')
 
 
-
 class EmailReceivedSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailReceived
         fields = ['user', 'subject', 'content']
+
+class OrderTrackingSerializer(serializers.Serializer):
+    merchant_reference = serializers.CharField()
+    order_tracking_id = serializers.CharField()
+    membership_tier = serializers.CharField()
+
+
+class OrderRetrieveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('merchant_reference', 'order_tracking_id')
+
+
+class PaymentVerificationSerializer(serializers.Serializer):
+    payment_status = serializers.CharField()

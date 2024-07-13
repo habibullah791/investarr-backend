@@ -1,4 +1,5 @@
-from rest_framework import generics, status
+from django.http import Http404
+from rest_framework import generics, status, serializers
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -29,8 +30,12 @@ from .serializers import (
     ArticleSerializer,
     VideoSerializer,
     UserVerificationStatusSerializer,
-    EmailReceivedSerializer
+    EmailReceivedSerializer,
+    OrderTrackingSerializer,
+    OrderRetrieveSerializer,
+    PaymentVerificationSerializer
 )
+
 
 
 class UserCreateView(generics.CreateAPIView):
@@ -283,6 +288,77 @@ class EmailReceivedCreateView(generics.CreateAPIView):
             'message': 'Email sent and data saved successfully.'
         })
 
+class OrderTrackingCreateView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrderTrackingSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        user = request.user
+        user.merchant_reference = serializer.validated_data['merchant_reference']
+        user.order_tracking_id = serializer.validated_data['order_tracking_id']
+        user.membership_tier = serializer.validated_data['membership_tier']
+        user.save()
+
+        return Response({
+            'statusCode': status.HTTP_201_CREATED,
+            'message': 'Order tracking information saved successfully.'
+        })
+
+class OrderRetrieveView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrderRetrieveSerializer
+
+    def get_object(self):
+        order_tracking_id = self.kwargs['order_tracking_id']
+        try:
+            return CustomUser.objects.get(order_tracking_id=order_tracking_id)
+        except CustomUser.DoesNotExist:
+            return None
+
+    def get(self, request, *args, **kwargs):
+        try:
+            user = self.get_object()
+            serializer = self.get_serializer(user)
+            return Response({
+                'statusCode': status.HTTP_200_OK,
+                'data': serializer.data,
+                'message': 'Order tracking information retrieved successfully.'
+            }, status=status.HTTP_200_OK)
+        except Http404:
+            return Response({
+                'statusCode': status.HTTP_200_OK,
+                'message': 'Order tracking ID not found.'
+            }, status=status.HTTP_200_OK)
+
+class PaymentVerificationView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = PaymentVerificationSerializer
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        user_id = kwargs.get('pk')
+        payment_status = serializer.validated_data['payment_status']
+        
+        try:
+            user = CustomUser.objects.get(id=user_id)
+            user.payment_status = payment_status
+            user.save()
+            return Response({
+                'statusCode': status.HTTP_200_OK,
+                'message': 'Payment status updated successfully.'
+            })
+        except CustomUser.DoesNotExist:
+            return Response({
+                'statusCode': status.HTTP_404_NOT_FOUND,
+                'message': 'User not found.'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        
 def send_email(subject, body, sender, recipients, password):
     print("Subject: ", subject)
     print("Body: ", body)

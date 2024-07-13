@@ -14,7 +14,10 @@ from .views import (
     InvesteeDataView,
     CurrentUserVerificationStatusView,
     EmailReceivedCreateView,
-    CertifiedUserDataView
+    CertifiedUserDataView,
+    OrderTrackingCreateView,
+    OrderRetrieveView,
+    PaymentVerificationView
 )
 
 
@@ -34,5 +37,8 @@ urlpatterns = [
     path('email-pass/update/<int:pk>/', UserEmailPasswordUpdateView.as_view(), name='investor_update'),
     path('user/verification-status/', CurrentUserVerificationStatusView.as_view(), name='current-user-verification-status'),
     path('email/submit/', EmailReceivedCreateView.as_view(), name='email-submit'),
+    path('order/track/', OrderTrackingCreateView.as_view(), name='order-track'),
+    path('order/retrieve/<str:order_tracking_id>/', OrderRetrieveView.as_view(), name='order-retrieve'),
+    path('user/<int:pk>/payment-verification/', PaymentVerificationView.as_view(), name='payment-verification'),
 
 ]
