@@ -17,7 +17,8 @@ from .views import (
     CertifiedUserDataView,
     OrderTrackingCreateView,
     OrderRetrieveView,
-    PaymentVerificationView
+    PaymentVerificationView,
+    PasswordResetView,
 )
 
 
@@ -26,6 +27,7 @@ urlpatterns = [
     path('articles/<int:pk>/', ArticleDetailView.as_view(), name='article-detail'),
     path('videos/', VideoListView.as_view(), name='video-list'),
     path('login/', UserLoginView.as_view(), name='user-login'),
+    path('password-reset/', PasswordResetView.as_view(), name='password-reset'),
     path('signup/', UserCreateView.as_view(), name='user-create'),
     path('users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
     path('logout/', LogoutView.as_view(), name='user-logout'),
@@ -36,7 +38,6 @@ urlpatterns = [
     path('investee-info/update/<int:pk>/', InvesteeInfoUpdateView.as_view(), name='investor_update'),
     path('email-pass/update/<int:pk>/', UserEmailPasswordUpdateView.as_view(), name='investor_update'),
     path('user/verification-status/', CurrentUserVerificationStatusView.as_view(), name='current-user-verification-status'),
-    path('email/submit/', EmailReceivedCreateView.as_view(), name='email-submit'),
     path('order/track/', OrderTrackingCreateView.as_view(), name='order-track'),
     path('order/retrieve/<str:order_tracking_id>/', OrderRetrieveView.as_view(), name='order-retrieve'),
     path('user/<int:pk>/payment-verification/', PaymentVerificationView.as_view(), name='payment-verification'),

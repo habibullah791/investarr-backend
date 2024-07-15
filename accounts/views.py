@@ -259,27 +259,6 @@ class CurrentUserVerificationStatusView(generics.RetrieveAPIView):
         }
         return Response(data)
 
-class EmailReceivedCreateView(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = EmailReceivedSerializer
-
-    def perform_create(self, serializer):
-        # Save the email received data
-        email_received = serializer.save()
-        print("Email received", email_received)
-        
-        # Send the email using custom function
-        sender = settings.DEFAULT_FROM_EMAIL
-        recipients = ['shahid.habib791@gmail.com']
-        subject = email_received.subject
-        body = email_received.content
-
-        try:
-            send_email(subject, body, sender, recipients, settings.EMAIL_HOST_PASSWORD)
-            print("-Email sent successfully!")
-        except Exception as e:
-            print(f"Error sending email: {e}")
-
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
         return Response({
@@ -333,6 +312,33 @@ class OrderRetrieveView(generics.RetrieveAPIView):
                 'message': 'Order tracking ID not found.'
             }, status=status.HTTP_200_OK)
 
+class PasswordResetView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        username = request.data.get("username")
+        password = request.data.get("password")
+        confirm_password = request.data.get("confirm_password")
+
+        if not username or not password or not confirm_password:
+            return Response({"message": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if password != confirm_password:
+            return Response({
+                "message": "Passwords do not match."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = CustomUser.objects.get(username=username)
+            user.set_password(password)
+            user.save()
+            return Response({"message": "Password reset successful."}, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            return Response({
+                "message": "User not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+
 class PaymentVerificationView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = PaymentVerificationSerializer
@@ -358,29 +364,18 @@ class PaymentVerificationView(generics.UpdateAPIView):
                 'message': 'User not found.'
             }, status=status.HTTP_404_NOT_FOUND)
         
+
+class EmailReceivedCreateView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EmailReceivedSerializer
+
+    def perform_create(self, serializer):
+        # Save the email received data
+        email_received = serializer.save()
+        print("Email received", email_received)
         
-def send_email(subject, body, sender, recipients, password):
-    print("Subject: ", subject)
-    print("Body: ", body)
-    print("Sender: ", sender)
-    print("Recipients: ", recipients)
-    print("Password: ", password)
-    try:
-        # Create a MIMEText object for HTML
-        msg = MIMEMultipart("alternative")
-
-        html_body = MIMEText(body, "html")
-        msg.attach(html_body)
-
-        msg["Subject"] = subject
-        msg["From"] = sender
-        msg["To"] = ", ".join(recipients)
-
-        with smtplib.SMTP_SSL(settings.EMAIL_HOST, settings.EMAIL_PORT) as smtp_server:
-            smtp_server.login(sender, password)
-            smtp_server.sendmail(sender, recipients, msg.as_string())
-
-        print("Email sent successfully!")
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
+        # Send the email using custom function
+        sender = settings.DEFAULT_FROM_EMAIL
+        recipients = ['shahid.habib791@gmail.com']
+        subject = email_received.subject
+        body = email_received.content

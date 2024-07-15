@@ -24,7 +24,7 @@ yarn-error.log*
 
 
 # ignore .venv all over the project
-**/.venv
+**/venv
 
 # also __pycache__
 **/__pycache__
