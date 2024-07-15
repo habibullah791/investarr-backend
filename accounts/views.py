@@ -36,7 +36,22 @@ from .serializers import (
     PaymentVerificationSerializer
 )
 
+class UserLoginView(TokenObtainPairView):
+    serializer_class = UserLoginSerializer
+    permission_classes = [AllowAny]
 
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data
+        refresh = RefreshToken.for_user(user)
+        user_data = CustomUserSerializer(user).data
+
+        return Response({
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+            "user": user_data
+        })
 
 class UserCreateView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
@@ -44,13 +59,8 @@ class UserCreateView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
-        # Hash the password before saving the user
-        validated_data = serializer.validated_data
-        password = validated_data.get('password')
-        if password:
-            validated_data['password'] = make_password(password)
         serializer.save()
-       
+
 class UserDetailView(generics.RetrieveAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
@@ -78,23 +88,6 @@ class LogoutView(APIView):
                 return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-   
-class UserLoginView(TokenObtainPairView):
-    serializer_class = UserLoginSerializer
-    permission_classes = [AllowAny]
-    
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data
-        refresh = RefreshToken.for_user(user)
-        user_data = CustomUserSerializer(user).data
-
-        return Response({
-            "refresh": str(refresh),
-            "access": str(refresh.access_token),
-            "user": user_data
-        })
 
 class InvestorDataView(generics.ListAPIView):
     serializer_class = InvestorSerializer

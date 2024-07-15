@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework import serializers
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
 
 import logging
 from .models import CustomUser, Article, Video, ArticleImage,EmailReceived
@@ -12,23 +13,28 @@ class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
 
-
     def validate(self, data):
         logger.debug(f"Attempting to authenticate user {data['username']}")
-        print("UserLoginSerializer")
-        print(data)
         user = authenticate(username=data['username'], password=data['password'])
+        
         if user and user.is_active:
             logger.debug("Authentication successful")
             return user
         logger.error("Authentication failed: Invalid credentials")
         raise serializers.ValidationError("Invalid credentials")
-    
+ 
+
 class CustomUserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = CustomUser
-        exclude = ['password']
+        fields = ('id', 'first_name', 'last_name', 'user_type', 'username', 'email', 'phone_number', 'profile_pic_url', 'address', 'area_of_interest', 'bio', 'membership_tier', 'verification_status', 'verification_badge', 'startup_name', 'startup_idea', 'startup_description', 'gallery_images', 'password')
 
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data['password'])
+        return super().create(validated_data)
+    
 
 class InvestorSerializer(serializers.ModelSerializer):
     class Meta:
