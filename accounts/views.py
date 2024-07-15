@@ -36,6 +36,8 @@ from .serializers import (
     PaymentVerificationSerializer
 )
 
+
+
 class UserLoginView(TokenObtainPairView):
     serializer_class = UserLoginSerializer
     permission_classes = [AllowAny]
@@ -52,6 +54,7 @@ class UserLoginView(TokenObtainPairView):
             "access": str(refresh.access_token),
             "user": user_data
         })
+
 
 class UserCreateView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
