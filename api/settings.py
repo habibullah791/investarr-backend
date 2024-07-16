@@ -159,7 +159,7 @@ REST_FRAMEWORK = {
 
 from datetime import timedelta
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -199,13 +199,14 @@ CSRF_TRUSTED_ORIGINS = ['https://web-production-15a27.up.railway.app']
 
 
 
-# Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-DEFAULT_FROM_EMAIL = 'investarr@starrich.co.tz'
-# EMAIL_HOST = 'smtp.example.com'
-EMAIL_HOST = "smtp.mailbux.email"  # Update the EMAIL_HOST to smtp.mailbux.email
-EMAIL_PORT = 465  # Change the EMAIL_PORT to 465 for Mailbox
-EMAIL_USE_SSL = True  # Add this line to enable SSL for Mailbox
+EMAIL_HOST = "server232.web-hosting.com"
+EMAIL_PORT = 465
+EMAIL_HOST_USER = "contact@investarr.com"
+EMAIL_HOST_PASSWORD = "investarr@1234"
+EMAIL_USE_SSL = True
 EMAIL_USE_TLS = False
-EMAIL_HOST_USER = 'investarr@starrich.co.tz'
-EMAIL_HOST_PASSWORD = 'Investarr2211'
+
+# settings.py
+
+DEFAULT_FROM_EMAIL = 'contact@investarr.com'

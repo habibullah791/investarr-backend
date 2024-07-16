@@ -54,7 +54,7 @@ class VideoAdmin(admin.ModelAdmin):
 
 
 class EmailReceivedAdmin(admin.ModelAdmin):
-    list_display = ('user','subject', 'received_at', 'is_read', 'is_deleted')
+    list_display = ('recipient_email', 'subject', 'received_at', 'is_read', 'is_deleted')
     list_filter = ('is_read', 'is_deleted', 'received_at')
     search_fields = ( 'subject', 'content')
 

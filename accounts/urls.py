@@ -41,5 +41,6 @@ urlpatterns = [
     path('order/track/', OrderTrackingCreateView.as_view(), name='order-track'),
     path('order/retrieve/<str:order_tracking_id>/', OrderRetrieveView.as_view(), name='order-retrieve'),
     path('user/<int:pk>/payment-verification/', PaymentVerificationView.as_view(), name='payment-verification'),
+    path('email/send/', EmailReceivedCreateView.as_view(), name='send_email'),
 
 ]

@@ -1,5 +1,5 @@
 from django.http import Http404
-from rest_framework import generics, status, serializers
+from rest_framework import generics, status, serializers, permissions
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -202,6 +202,7 @@ class UserEmailPasswordUpdateView(UpdateAPIView):
 class ArticleListView(ListAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
+    permission_classes = [AllowAny]
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -359,19 +360,48 @@ class PaymentVerificationView(generics.UpdateAPIView):
                 'statusCode': status.HTTP_404_NOT_FOUND,
                 'message': 'User not found.'
             }, status=status.HTTP_404_NOT_FOUND)
-        
+
+
+from django.core.mail import send_mail
 
 class EmailReceivedCreateView(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     serializer_class = EmailReceivedSerializer
 
-    def perform_create(self, serializer):
-        # Save the email received data
-        email_received = serializer.save()
-        print("Email received", email_received)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email_received_instance = serializer.save()
+
+        recipient_email = serializer.validated_data.get('recipient_email')
+        subject = serializer.validated_data.get('subject')
+        content = serializer.validated_data.get('content')
+
+        # Send email to the recipient
+        email_sent = self.send_email(recipient_email, subject, content)
+
+        if email_sent:
+            return Response({'message': 'Email received and sent successfully!'}, status=status.HTTP_201_CREATED)
+        else:
+            # If email sending fails, you might want to handle this differently
+            return Response({'message': 'Email received but failed to send the email.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+    def send_email(self, recipient_email, subject, content):
+        try:
+            email = send_mail(
+                subject,
+                content,
+                'contact@investarr.com',
+                ['habibullahshahid001@gmail.com'],
+                fail_silently=False,
+            )
+
+            if email:
+                print("Email sent successfully!", email)
+                return True
+            else:
+                return False
+        except Exception as e:
+            return False
         
-        # Send the email using custom function
-        sender = settings.DEFAULT_FROM_EMAIL
-        recipients = ['shahid.habib791@gmail.com']
-        subject = email_received.subject
-        body = email_received.content

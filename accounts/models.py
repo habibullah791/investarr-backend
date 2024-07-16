@@ -60,7 +60,7 @@ class CustomUser(AbstractUser):
 
 
 class EmailReceived(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
+    recipient_email = models.EmailField(null=True, blank=True)
     subject = models.CharField(max_length=255)
     content = models.TextField()
     received_at = models.DateTimeField(auto_now_add=True)

@@ -116,11 +116,6 @@ class UserVerificationStatusSerializer(serializers.ModelSerializer):
         fields = ('id', 'verification_badge', 'verification_status', 'membership_tier')
 
 
-class EmailReceivedSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EmailReceived
-        fields = ['user', 'subject', 'content']
-
 class OrderTrackingSerializer(serializers.Serializer):
     merchant_reference = serializers.CharField()
     order_tracking_id = serializers.CharField()
@@ -135,3 +130,25 @@ class OrderRetrieveSerializer(serializers.ModelSerializer):
 
 class PaymentVerificationSerializer(serializers.Serializer):
     payment_status = serializers.CharField()
+
+
+class EmailReceivedSerializer(serializers.ModelSerializer):
+    recipient_email = serializers.EmailField(write_only=True)
+    subject = serializers.CharField(write_only=True)
+    content = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = EmailReceived
+        fields = ['recipient_email', 'subject', 'content']
+
+    def create(self, validated_data):
+        recipient_email = validated_data.pop('recipient_email')
+        subject = validated_data.pop('subject')
+        content = validated_data.pop('content')
+
+        instance = EmailReceived.objects.create(
+            recipient_email=recipient_email,
+            subject=subject,
+            content=content
+        )
+        return instance
