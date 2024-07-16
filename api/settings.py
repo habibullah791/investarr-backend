@@ -199,14 +199,26 @@ CSRF_TRUSTED_ORIGINS = ['https://web-production-15a27.up.railway.app']
 
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = "server232.web-hosting.com"
-EMAIL_PORT = 465
-EMAIL_HOST_USER = "contact@investarr.com"
-EMAIL_HOST_PASSWORD = "investarr@1234"
-EMAIL_USE_SSL = True
-EMAIL_USE_TLS = False
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = "server232.web-hosting.com"
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = "contact@investarr.com"
+# EMAIL_HOST_PASSWORD = "investarr@1234"
+# # EMAIL_USE_SSL = False
+# EMAIL_USE_TLS = True
+
+# # settings.py
+
+# DEFAULT_FROM_EMAIL = 'contact@investarr.com'
+
+# # mjra tagn gbns qjni
 
 # settings.py
 
-DEFAULT_FROM_EMAIL = 'contact@investarr.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 465  # This should be an integer
+EMAIL_HOST_USER = "whoishabib791@gmail.com"
+EMAIL_HOST_PASSWORD = "mjratagngbnsqjni"
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True  # Using SSL since you're connecting to the SMTP_SSL server

@@ -13,7 +13,8 @@ from email.mime.text import MIMEText
 import smtplib
 from django.db.models import Q
 
-from .models import CustomUser, Article, Video
+from .utils import send_email
+from .models import CustomUser, Article, Video, EmailReceived
 from rest_framework.generics import (
     UpdateAPIView,
     ListAPIView,
@@ -33,7 +34,15 @@ from .serializers import (
     EmailReceivedSerializer,
     OrderTrackingSerializer,
     OrderRetrieveSerializer,
-    PaymentVerificationSerializer
+    PaymentVerificationSerializer,
+    ContactUsSerializer
+)
+
+
+from .email_templates import (
+    HomePageCATEmailTemplate,
+    SignUpEmailTemplate,
+    ContactUsEmailTemplate
 )
 
 
@@ -55,14 +64,30 @@ class UserLoginView(TokenObtainPairView):
             "user": user_data
         })
 
-
 class UserCreateView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
-        serializer.save()
+        instance = serializer.save()
+        
+        # Customize this part as per your needs
+        first_name = instance.first_name
+        last_name = instance.last_name
+        content = SignUpEmailTemplate(first_name, last_name)
+        
+        # Example subject and sender
+        subject = "Welcome to Investarr!"
+        sender = settings.EMAIL_HOST_USER
+        
+        # Send email to the new user
+        email_sent = send_email(subject, content, sender, [instance.email], settings.EMAIL_HOST_PASSWORD)
+        
+        if email_sent:
+            print(f"Email sent successfully to {instance.email}!")
+        else:
+            print(f"Failed to send email to {instance.email}.")
 
 class UserDetailView(generics.RetrieveAPIView):
     queryset = CustomUser.objects.all()
@@ -335,7 +360,6 @@ class PasswordResetView(APIView):
                 "message": "User not found."
             }, status=status.HTTP_404_NOT_FOUND)
 
-
 class PaymentVerificationView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = PaymentVerificationSerializer
@@ -361,47 +385,80 @@ class PaymentVerificationView(generics.UpdateAPIView):
                 'message': 'User not found.'
             }, status=status.HTTP_404_NOT_FOUND)
 
+class ContactUsCreateView(generics.CreateAPIView):
+    permission_classes = [permissions.AllowAny]
+    queryset = EmailReceived.objects.all()
+    serializer_class = ContactUsSerializer
 
-from django.core.mail import send_mail
+    def create(self, request, *args, **kwargs):
+        print("ContactUsCreateView", request.data)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        # Send email to the user
+        recipient_email = serializer.validated_data.get('recipient_email')
+        subject = f"Thank you for contacting Investarr, {request.data.get('name')}!"
+        message = ContactUsEmailTemplate(request.data.get('name'))  # Get the HTML content
+        sender_email = settings.EMAIL_HOST_USER
+        
+        # Send the email with HTML content
+        send_mail(
+            subject,
+            message,  # This is plain text, for now, consider using `html_message`
+            sender_email,
+            [recipient_email],
+            fail_silently=False,
+            html_message=message  # Pass the HTML message here
+        )
+
+        return Response({
+            'message': 'Email sent successfully!',
+            'statusCode': status.HTTP_200_OK,
+        }, status=status.HTTP_201_CREATED)
+
+    def perform_create(self, serializer):
+        serializer.save()
 
 class EmailReceivedCreateView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = EmailReceivedSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        # Create a temporary data dictionary to include subject and content
+        data = {
+            'recipient_email': request.data.get('recipient_email'),
+            'subject': "Find the Right Investor or Investee with Investarr",
+            'content': HomePageCATEmailTemplate(),
+        }
+
+        # If user is authenticated, include user in the data
+        if request.user.is_authenticated:
+            data['user'] = request.user.id
+
+        # Validate the data with the serializer
+        serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        email_received_instance = serializer.save()
 
-        recipient_email = serializer.validated_data.get('recipient_email')
-        subject = serializer.validated_data.get('subject')
-        content = serializer.validated_data.get('content')
+        # Save email information to the database
+        email_received_instance = EmailReceived.objects.create(**serializer.validated_data)
 
-        # Send email to the recipient
-        email_sent = self.send_email(recipient_email, subject, content)
+        # Send the email
+        email_sent = send_email(
+            serializer.validated_data['subject'],
+            serializer.validated_data['content'],
+            settings.EMAIL_HOST_USER,
+            [serializer.validated_data['recipient_email']],
+            settings.EMAIL_HOST_PASSWORD
+        )
 
         if email_sent:
-            return Response({'message': 'Email received and sent successfully!'}, status=status.HTTP_201_CREATED)
+            return Response({
+                'message': 'Email sent successfully!',
+                'statusCode': status.HTTP_200_OK,
+            }, status=status.HTTP_201_CREATED)
         else:
-            # If email sending fails, you might want to handle this differently
-            return Response({'message': 'Email received but failed to send the email.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-    
-    def send_email(self, recipient_email, subject, content):
-        try:
-            email = send_mail(
-                subject,
-                content,
-                'contact@investarr.com',
-                ['habibullahshahid001@gmail.com'],
-                fail_silently=False,
-            )
-
-            if email:
-                print("Email sent successfully!", email)
-                return True
-            else:
-                return False
-        except Exception as e:
-            return False
-        
+            return Response({
+                'message': 'Unable to send email at this time',
+                'statusCode': status.HTTP_404_NOT_FOUND,
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
