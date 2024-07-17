@@ -7,7 +7,7 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = [
         'id', 'username', 'first_name', 'last_name', 'email', 'user_type', 'payment_status' ,
-        'address','membership_tier', 'verification_status', 'verification_badge',
+        'address','membership_tier', 'verification_status', 'verification_badge', 'is_email_verified',
         'startup_name', 'is_staff', 'is_active',
         'last_login', 'date_joined'
     ]

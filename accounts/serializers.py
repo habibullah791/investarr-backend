@@ -29,7 +29,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'first_name', 'last_name', 'user_type', 'username', 'email', 'phone_number', 'profile_pic_url', 'address', 'area_of_interest', 'bio', 'membership_tier', 'verification_status', 'verification_badge', 'startup_name', 'startup_idea', 'startup_description', 'gallery_images', 'password')
+        fields = ('id', 'first_name', 'last_name', 'user_type', 'username', 'email', 'phone_number', 'profile_pic_url', 'address', 'area_of_interest', 'bio', 'membership_tier', 'verification_status', 'verification_badge', 'startup_name', 'startup_idea', 'startup_description', 'gallery_images', 'password', 'is_email_verified', 'is_phone_verified', 'order_tracking_id', 'merchant_reference', 'payment_status')
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
@@ -150,3 +150,9 @@ class ContactUsSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return EmailReceived.objects.create(**validated_data)
+
+
+class OTPSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('otp_code', 'otp_created_at')

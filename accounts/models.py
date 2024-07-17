@@ -54,9 +54,12 @@ class CustomUser(AbstractUser):
     order_tracking_id = models.CharField(max_length=255, blank=True, null=True)
     merchant_reference = models.CharField(max_length=255, blank=True, null=True)
     payment_status = models.CharField(max_length=255, choices=PAYMENT_STATUS, default='Pending', blank=True, null=True)
+    otp_code = models.CharField(max_length=4, blank=True, null=True)
+    otp_created_at = models.DateTimeField(blank=True, null=True)
     
     def __str__(self):
         return self.username
+
 
 
 class EmailReceived(models.Model):

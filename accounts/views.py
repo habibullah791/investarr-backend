@@ -8,9 +8,8 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.views import APIView
 from django.core.mail import send_mail
 from django.conf import settings
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import smtplib
+import random
+from django.utils import timezone
 from django.db.models import Q
 
 from .utils import send_email
@@ -35,7 +34,8 @@ from .serializers import (
     OrderTrackingSerializer,
     OrderRetrieveSerializer,
     PaymentVerificationSerializer,
-    ContactUsSerializer
+    ContactUsSerializer,
+    OTPSerializer
 )
 
 
@@ -441,7 +441,7 @@ class EmailReceivedCreateView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
 
         # Save email information to the database
-        email_received_instance = EmailReceived.objects.create(**serializer.validated_data)
+        EmailReceived.objects.create(**serializer.validated_data)
 
         # Send the email
         email_sent = send_email(
@@ -462,3 +462,78 @@ class EmailReceivedCreateView(generics.CreateAPIView):
                 'message': 'Unable to send email at this time',
                 'statusCode': status.HTTP_404_NOT_FOUND,
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class GenerateOTPView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OTPSerializer
+
+    def post(self, request, *args, **kwargs):
+
+        # generate OTP
+        otp = random.randint(1000, 9999)
+
+        # send OTP to user
+        subject = "OTP for Investarr"
+        message = f"Your OTP is {otp}"
+        sender_email = settings.EMAIL_HOST_USER
+        recipient_email = request.user.email
+
+        print("OTP", otp)
+        print("recipient_email", recipient_email)
+        print("sender_email", sender_email)
+        print("subject", subject)
+
+        user = request.user
+        user.otp_code = otp
+        user.otp_created_at = timezone.now()
+        user.save()
+
+        send_mail(
+            subject,
+            message,
+            sender_email,
+            [recipient_email],
+            fail_silently=False,
+        )
+
+        return Response({
+            'message': 'OTP sent successfully!',
+            'statusCode': status.HTTP_200_OK,
+        }, status=status.HTTP_200_OK)
+
+
+class VerifyOTPView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OTPSerializer
+
+    def post(self, request, *args, **kwargs):
+        otp = request.data.get('otp')
+        user = request.user
+        print("user", user)
+        print("otp", type(otp))
+        print("user.otp_code", type(user.otp_code))
+
+        if user.otp_code == otp and user.otp_created_at:
+            time_difference = timezone.now() - user.otp_created_at
+            if time_difference.total_seconds() <= 60:
+                user.otp_code = None
+                user.otp_created_at = None
+                user.is_email_verified = True
+                user.save()
+
+                return Response({
+                    'message': 'OTP verified successfully!',
+                    'statusCode': status.HTTP_200_OK,
+                }, status=status.HTTP_200_OK)
+            
+            return Response({
+                'message': 'OTP expired!',
+                'statusCode': status.HTTP_400_BAD_REQUEST,
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({
+            'message': 'Invalid OTP!',
+            'statusCode': status.HTTP_400_BAD_REQUEST,
+        }, status=status.HTTP_400_BAD_REQUEST)
+    

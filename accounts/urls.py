@@ -19,7 +19,9 @@ from .views import (
     OrderRetrieveView,
     PaymentVerificationView,
     PasswordResetView,
-    ContactUsCreateView
+    ContactUsCreateView,
+    GenerateOTPView,
+    VerifyOTPView
 )
 
 
@@ -44,4 +46,6 @@ urlpatterns = [
     path('user/<int:pk>/payment-verification/', PaymentVerificationView.as_view(), name='payment-verification'),
     path('email/send/', EmailReceivedCreateView.as_view(), name='send_email'),
     path('contact-us/', ContactUsCreateView.as_view(), name='contact_us_create'),
+    path('generate-otp/', GenerateOTPView.as_view(), name='generate_otp'),
+    path('verify-otp/', VerifyOTPView.as_view(), name='verify_otp'),
 ]
