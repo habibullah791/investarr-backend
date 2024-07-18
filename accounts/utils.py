@@ -1,15 +1,10 @@
+import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 from django.conf import settings
 
 def send_email(subject, body, sender, recipients, password):
-    print("Sending email...")
-    print("Recipient: ", recipients)
-    print("Subject: ", subject)
-    print("Sender: ", sender)
-    print("Password: ", password)
-    
     try:
         # Create a MIMEText object for HTML
         msg = MIMEMultipart("alternative")
@@ -20,11 +15,9 @@ def send_email(subject, body, sender, recipients, password):
         msg["From"] = sender
         msg["To"] = ", ".join(recipients)
 
-        with smtplib.SMTP_SSL(settings.EMAIL_HOST, settings.EMAIL_PORT) as smtp_server:
+        with smtplib.SMTP_SSL(os.getenv('EMAIL_HOST'), os.getenv('EMAIL_PORT')) as smtp_server:
             smtp_server.login(sender, password)
             smtp_server.sendmail(sender, recipients, msg.as_string())
-
-        print("Email sent successfully!")
         return True
 
     except Exception as e:

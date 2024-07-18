@@ -1,3 +1,4 @@
+import os
 from django.http import Http404
 from rest_framework import generics, status, serializers, permissions
 from rest_framework.response import Response
@@ -79,10 +80,11 @@ class UserCreateView(generics.CreateAPIView):
         
         # Example subject and sender
         subject = "Welcome to Investarr!"
-        sender = settings.EMAIL_HOST_USER
+        sender = os.getenv('EMAIL_HOST_USER')
+        password = os.getenv('EMAIL_HOST_PASSWORD')
         
         # Send email to the new user
-        email_sent = send_email(subject, content, sender, [instance.email], settings.EMAIL_HOST_PASSWORD)
+        email_sent = send_email(subject, content, sender, [instance.email], password)
         
         if email_sent:
             print(f"Email sent successfully to {instance.email}!")
@@ -402,7 +404,7 @@ class ContactUsCreateView(generics.CreateAPIView):
         recipient_email = serializer.validated_data.get('recipient_email')
         subject = f"Thank you for contacting Investarr, {request.data.get('name')}!"
         message = ContactUsEmailTemplate(request.data.get('name'))  # Get the HTML content
-        sender_email = settings.EMAIL_HOST_USER
+        sender_email = os.getenv('EMAIL_HOST_USER')
         
         # Send the email with HTML content
         send_mail(
@@ -449,9 +451,9 @@ class EmailReceivedCreateView(generics.CreateAPIView):
         email_sent = send_email(
             serializer.validated_data['subject'],
             serializer.validated_data['content'],
-            settings.EMAIL_HOST_USER,
+            os.getenv('EMAIL_HOST_USER'),
             [serializer.validated_data['recipient_email']],
-            settings.EMAIL_HOST_PASSWORD
+            os.getenv('EMAIL_HOST_PASSWORD')
         )
 
         if email_sent:
@@ -477,7 +479,7 @@ class GenerateOTPView(APIView):
         # send OTP to user
         subject = "OTP for Investarr"
         message = f"Your OTP is {otp}"
-        sender_email = settings.EMAIL_HOST_USER
+        sender_email = os.getenv('EMAIL_HOST_USER')
         recipient_email = request.user.email
 
         print("OTP", otp)
