@@ -338,27 +338,29 @@ class PasswordResetView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get("username")
+        email = request.data.get("email")
         password = request.data.get("password")
         confirm_password = request.data.get("confirm_password")
 
-        if not username or not password or not confirm_password:
+        if not email or not password or not confirm_password:
             return Response({"message": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
 
         if password != confirm_password:
-            return Response({
-                "message": "Passwords do not match."
-            }, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response({"message": "Passwords do not match."}, status=status.HTTP_400_BAD_REQUEST)
+        
         try:
-            user = CustomUser.objects.get(username=username)
-            user.set_password(password)
-            user.save()
-            return Response({"message": "Password reset successful."}, status=status.HTTP_200_OK)
-        except CustomUser.DoesNotExist:
-            return Response({
-                "message": "User not found."
-            }, status=status.HTTP_404_NOT_FOUND)
+            # Get all users with the given email
+            users = CustomUser.objects.filter(email=email)
+            if users.exists():
+                for user in users:
+                    user.password = make_password(password)
+                    user.save()
+                return Response({"message": "Password reset successfully."}, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class PaymentVerificationView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
@@ -463,7 +465,6 @@ class EmailReceivedCreateView(generics.CreateAPIView):
                 'statusCode': status.HTTP_404_NOT_FOUND,
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 class GenerateOTPView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = OTPSerializer
@@ -501,7 +502,6 @@ class GenerateOTPView(APIView):
             'message': 'OTP sent successfully!',
             'statusCode': status.HTTP_200_OK,
         }, status=status.HTTP_200_OK)
-
 
 class VerifyOTPView(APIView):
     permission_classes = [IsAuthenticated]
